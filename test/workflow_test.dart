@@ -1067,7 +1067,8 @@ void main() {
   group('Chapter identity and staff stock', () {
     test('a donor registration opens an official chapter thread', () {
       final result = AuthService.instance.register(
-        fullName: 'Chapter Chat',
+        firstName: 'Chapter',
+        lastName: 'Chat',
         alias: 'Chapter 01',
         email: 'chapter01@tabang.app',
         password: 'password123',
@@ -1116,7 +1117,8 @@ void main() {
       'a donor verified from the queue is matchable (weight backfilled)',
       () {
         final result = AuthService.instance.register(
-          fullName: 'Queue Donor',
+          firstName: 'Queue',
+          lastName: 'Donor',
           alias: 'Queue 01',
           email: 'queue01@tabang.app',
           password: 'password123',
@@ -1493,7 +1495,8 @@ void main() {
   group('Account creation and privacy', () {
     test('registration rejects a nickname that is already taken', () {
       final result = AuthService.instance.register(
-        fullName: 'New Donor',
+        firstName: 'New',
+        lastName: 'Donor',
         alias: 'JuanDC', // seeded demo donor
         email: 'new.donor@tabang.app',
         password: 'password123',
@@ -1507,7 +1510,8 @@ void main() {
 
     test('self-registration always creates a community account', () {
       final result = AuthService.instance.register(
-        fullName: 'Direct Donor',
+        firstName: 'Direct',
+        lastName: 'Donor',
         alias: 'Direct 01',
         email: 'direct01@tabang.app',
         password: 'password123',
@@ -1525,7 +1529,8 @@ void main() {
 
     test('registration rejects a nickname equal to the full name', () {
       final result = AuthService.instance.register(
-        fullName: 'Juan Dela Cruz',
+        firstName: 'Juan',
+        lastName: 'Dela Cruz',
         alias: 'juan dela cruz',
         email: 'juan.dc@tabang.app',
         password: 'password123',
@@ -1540,7 +1545,8 @@ void main() {
     test('staff can create a community account with a temporary password', () {
       final result = AuthService.instance.adminCreateUser(
         actorId: 'USR-010', // clinical personnel
-        fullName: 'Walk In Donor',
+        firstName: 'Walk In',
+        lastName: 'Donor',
         alias: 'Walkin 01',
         email: 'walkin01@tabang.app',
         phone: '+63 900 555 0001',
@@ -1566,7 +1572,8 @@ void main() {
     test('privilege rules apply to staff-created accounts', () {
       final asDonor = AuthService.instance.adminCreateUser(
         actorId: 'USR-001', // donor
-        fullName: 'Should Not Exist',
+        firstName: 'Should Not',
+        lastName: 'Exist',
         alias: 'Nope 01',
         email: 'nope01@tabang.app',
         phone: '+63 900 555 0002',
@@ -1577,7 +1584,8 @@ void main() {
 
       final staffTriesStaff = AuthService.instance.adminCreateUser(
         actorId: 'USR-010', // staff
-        fullName: 'Second Staff',
+        firstName: 'Second',
+        lastName: 'Staff',
         alias: 'Staff Two',
         email: 'staff.two@tabang.app',
         phone: '+63 900 555 0003',
@@ -1588,7 +1596,8 @@ void main() {
 
       final adminCreatesStaff = AuthService.instance.adminCreateUser(
         actorId: 'USR-011', // admin
-        fullName: 'Second Staff',
+        firstName: 'Second',
+        lastName: 'Staff',
         alias: 'Staff Two',
         email: 'staff.two@tabang.app',
         phone: '+63 900 555 0003',
@@ -1603,7 +1612,8 @@ void main() {
       expect(repo.userById('USR-001')!.onboardingCompleted, isTrue);
 
       final result = AuthService.instance.register(
-        fullName: 'Fresh Donor',
+        firstName: 'Fresh',
+        lastName: 'Donor',
         alias: 'Fresh 01',
         email: 'fresh01@tabang.app',
         password: 'password123',
@@ -1631,7 +1641,8 @@ void main() {
 
     test('donor registrations stay unverified until staff decides', () {
       final result = AuthService.instance.register(
-        fullName: 'Form Filler',
+        firstName: 'Form',
+        lastName: 'Filler',
         alias: 'Form 01',
         email: 'form01@tabang.app',
         password: 'password123',
@@ -1692,6 +1703,44 @@ void main() {
         repo.openDonorApplications.map((a) => a.userId),
         isNot(contains(result.user!.id)),
       );
+    });
+
+    test('registration stores first, middle and last names separately', () {
+      final result = AuthService.instance.register(
+        firstName: 'Maria',
+        middleName: 'Lourdes',
+        lastName: 'Santos',
+        alias: 'ML Santos 01',
+        email: 'name.parts.01@tabang.app',
+        password: 'password123',
+        phone: '+63 900 111 7777',
+        barangay: 'Zone 2',
+      );
+
+      expect(result.ok, isTrue);
+      final user = result.user!;
+      expect(user.firstName, 'Maria');
+      expect(user.middleName, 'Lourdes');
+      expect(user.lastName, 'Santos');
+      expect(user.fullName, 'Maria Lourdes Santos');
+      expect(user.initials, 'MS');
+    });
+
+    test('a blank middle name is stored as null', () {
+      final result = AuthService.instance.register(
+        firstName: 'Noel',
+        middleName: '   ',
+        lastName: 'Bautista',
+        alias: 'Noel B 01',
+        email: 'name.parts.02@tabang.app',
+        password: 'password123',
+        phone: '+63 900 111 8888',
+        barangay: 'Zone 2',
+      );
+
+      expect(result.ok, isTrue);
+      expect(result.user!.middleName, isNull);
+      expect(result.user!.fullName, 'Noel Bautista');
     });
   });
 

@@ -131,7 +131,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
   void _showCreateUserDialog(BuildContext context) {
     final actor = _repo.userById(widget.currentUser.id) ?? widget.currentUser;
     final formKey = GlobalKey<FormState>();
-    final nameController = TextEditingController();
+    final firstNameController = TextEditingController();
+    final middleNameController = TextEditingController();
+    final lastNameController = TextEditingController();
     final aliasController = TextEditingController();
     final emailController = TextEditingController();
     final phoneController = TextEditingController();
@@ -194,14 +196,44 @@ class _UserManagementPageState extends State<UserManagementPage> {
                         }),
                       ),
                       const SizedBox(height: TabangSpace.md),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: firstNameController,
+                              textCapitalization: TextCapitalization.words,
+                              decoration: const InputDecoration(
+                                labelText: 'First name',
+                              ),
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'Enter the first name'
+                                  : null,
+                            ),
+                          ),
+                          const SizedBox(width: TabangSpace.md),
+                          Expanded(
+                            child: TextFormField(
+                              controller: lastNameController,
+                              textCapitalization: TextCapitalization.words,
+                              decoration: const InputDecoration(
+                                labelText: 'Last name',
+                              ),
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'Enter the last name'
+                                  : null,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: TabangSpace.md),
                       TextFormField(
-                        controller: nameController,
+                        controller: middleNameController,
+                        textCapitalization: TextCapitalization.words,
                         decoration: const InputDecoration(
-                          labelText: 'Full name',
+                          labelText: 'Middle name (optional)',
+                          helperText: 'Leave blank if none',
                         ),
-                        validator: (v) => (v == null || v.trim().length < 3)
-                            ? 'Enter the full name'
-                            : null,
                       ),
                       const SizedBox(height: TabangSpace.md),
                       TextFormField(
@@ -214,8 +246,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
                         validator: (v) {
                           final alias = v?.trim() ?? '';
                           if (alias.length < 2) return 'Choose a nickname';
-                          if (alias.toLowerCase() ==
-                              nameController.text.trim().toLowerCase()) {
+                          final middle = middleNameController.text.trim();
+                          final fullName = [
+                            firstNameController.text.trim(),
+                            if (middle.isNotEmpty) middle,
+                            lastNameController.text.trim(),
+                          ].where((part) => part.isNotEmpty).join(' ');
+                          if (alias.toLowerCase() == fullName.toLowerCase()) {
                             return 'Use a nickname, not the full name';
                           }
                           if (_repo.isAliasTaken(alias)) {
@@ -358,7 +395,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   if (!formKey.currentState!.validate()) return;
                   final result = AuthService.instance.adminCreateUser(
                     actorId: actor.id,
-                    fullName: nameController.text.trim(),
+                    firstName: firstNameController.text.trim(),
+                    middleName: middleNameController.text.trim(),
+                    lastName: lastNameController.text.trim(),
                     alias: aliasController.text.trim(),
                     email: emailController.text.trim(),
                     phone: phoneController.text.trim(),

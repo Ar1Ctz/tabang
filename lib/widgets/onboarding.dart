@@ -14,7 +14,9 @@ bool shellUserChanged(AppUser before, AppUser after) {
       before.role != after.role ||
       before.bloodType != after.bloodType ||
       before.alias != after.alias ||
-      before.fullName != after.fullName ||
+      before.firstName != after.firstName ||
+      before.middleName != after.middleName ||
+      before.lastName != after.lastName ||
       before.barangay != after.barangay ||
       before.status != after.status;
 }

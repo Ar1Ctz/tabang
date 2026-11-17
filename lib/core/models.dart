@@ -330,7 +330,9 @@ enum UserRole {
 class AppUser {
   const AppUser({
     required this.id,
-    required this.fullName,
+    required this.firstName,
+    this.middleName,
+    required this.lastName,
     required this.alias,
     required this.email,
     required this.phone,
@@ -359,7 +361,15 @@ class AppUser {
   });
 
   final String id;
-  final String fullName;
+
+  /// Legal name parts, stored separately so searches, reports and future
+  /// exports never have to guess where a compound given name ends and the
+  /// family name begins. [middleName] is optional; an empty middle name is
+  /// stored as null.
+  final String firstName;
+  final String? middleName;
+  final String lastName;
+
   final String alias;
   final String email;
   final String phone;
@@ -423,11 +433,26 @@ class AppUser {
   bool allowsComponent(BloodComponent component) =>
       allowedComponents == null || allowedComponents!.contains(component);
 
+  /// Display name composed from the stored name parts.
+  ///
+  /// This is derived on purpose: the database keeps [firstName], [middleName]
+  /// and [lastName] as the source of truth, and no screen writes back to a
+  /// single name field.
+  String get fullName {
+    return [
+      firstName,
+      middleName ?? '',
+      lastName,
+    ].map((part) => part.trim()).where((part) => part.isNotEmpty).join(' ');
+  }
+
   String get initials {
-    final parts = fullName.trim().split(RegExp(r'\s+'));
-    if (parts.isEmpty || parts.first.isEmpty) return '?';
-    if (parts.length == 1) return parts.first[0].toUpperCase();
-    return (parts.first[0] + parts.last[0]).toUpperCase();
+    final first = firstName.trim();
+    final last = lastName.trim();
+    if (first.isEmpty && last.isEmpty) return '?';
+    if (first.isEmpty) return last[0].toUpperCase();
+    if (last.isEmpty) return first[0].toUpperCase();
+    return (first[0] + last[0]).toUpperCase();
   }
 
   int? get age {
@@ -472,7 +497,10 @@ class AppUser {
     String? alias,
     String? phone,
     String? barangay,
-    String? fullName,
+    String? firstName,
+    String? middleName,
+    bool clearMiddleName = false,
+    String? lastName,
     String? email,
     String? photoAsset,
     UserRole? role,
@@ -487,7 +515,9 @@ class AppUser {
   }) {
     return AppUser(
       id: id,
-      fullName: fullName ?? this.fullName,
+      firstName: firstName ?? this.firstName,
+      middleName: clearMiddleName ? null : (middleName ?? this.middleName),
+      lastName: lastName ?? this.lastName,
       alias: alias ?? this.alias,
       email: email ?? this.email,
       phone: phone ?? this.phone,

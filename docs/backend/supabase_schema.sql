@@ -112,7 +112,18 @@ create table if not exists public.tab_activity_rules (
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   legacy_id text unique,
-  full_name text not null default '',
+  first_name text not null default '',
+  middle_name text,
+  last_name text not null default '',
+  -- Display-only projection. The three columns above are the source of truth;
+  -- reports and exports should read them separately.
+  full_name text generated always as (
+    btrim(
+      coalesce(nullif(btrim(first_name), '') || ' ', '') ||
+      coalesce(nullif(btrim(middle_name), '') || ' ', '') ||
+      coalesce(nullif(btrim(last_name), ''), '')
+    )
+  ) stored,
   alias text not null,
   email text not null,
   phone text not null default '',
@@ -773,18 +784,47 @@ declare
   fallback text := split_part(new.email, '@', 1) || '-' || right(new.id::text, 4);
 begin
   insert into public.profiles (
-    id, email, full_name, alias, phone, barangay, role, status, public_handle
-  ) values (
+    id, email, first_name, middle_name, last_name, alias, phone, barangay,
+    role, status, public_handle
+  )
+  select
     new.id,
     new.email,
-    coalesce(new.raw_user_meta_data->>'full_name', fallback),
+    coalesce(
+      nullif(btrim(meta.first_name), ''),
+      split_part(meta.raw_name, ' ', 1)
+    ),
+    nullif(btrim(meta.middle_name), ''),
+    coalesce(
+      nullif(btrim(meta.last_name), ''),
+      nullif(
+        btrim(
+          substr(
+            meta.raw_name,
+            length(split_part(meta.raw_name, ' ', 1)) + 1
+          )
+        ),
+        ''
+      ),
+      ''
+    ),
     coalesce(new.raw_user_meta_data->>'alias', fallback),
     coalesce(new.raw_user_meta_data->>'phone', ''),
     coalesce(new.raw_user_meta_data->>'barangay', 'Zone 1'),
     'user',
     'unverified',
     'Donor #' || upper(substr(replace(new.id::text, '-', ''), 1, 8))
-  );
+  from (
+    select
+      coalesce(new.raw_user_meta_data->>'first_name', '') as first_name,
+      coalesce(new.raw_user_meta_data->>'middle_name', '') as middle_name,
+      coalesce(new.raw_user_meta_data->>'last_name', '') as last_name,
+      -- Older clients sent one full_name field; split it only as a fallback.
+      coalesce(
+        nullif(new.raw_user_meta_data->>'full_name', ''),
+        fallback
+      ) as raw_name
+  ) meta;
   return new;
 end;
 $$;
@@ -1193,7 +1233,9 @@ $$;
 
 -- ============================================================ core RPCs
 create or replace function public.update_own_profile(
-  p_full_name text default null,
+  p_first_name text default null,
+  p_middle_name text default null,
+  p_last_name text default null,
   p_phone text default null,
   p_share_barangay boolean default null,
   p_notify_requests boolean default null,
@@ -1208,7 +1250,14 @@ begin
   if auth.uid() is null then raise exception 'not_authenticated'; end if;
 
   update public.profiles
-  set full_name = coalesce(nullif(btrim(p_full_name), ''), full_name),
+  set first_name = coalesce(nullif(btrim(p_first_name), ''), first_name),
+      -- Passing an empty middle name clears it; passing null leaves it alone.
+      middle_name = case
+        when p_middle_name is null then middle_name
+        when btrim(p_middle_name) = '' then null
+        else btrim(p_middle_name)
+      end,
+      last_name = coalesce(nullif(btrim(p_last_name), ''), last_name),
       phone = coalesce(p_phone, phone),
       share_barangay = coalesce(p_share_barangay, share_barangay),
       notify_requests = coalesce(p_notify_requests, notify_requests),
@@ -1830,11 +1879,12 @@ alter table public.chat_messages replica identity full;
 -- profiles.id references auth.users, so the organization account must be a real
 -- auth user. Create it with a random password (never shared) and disable
 -- interactive login, then:
---   insert into public.profiles (id, legacy_id, full_name, alias, email, phone,
---     barangay, role, status, public_handle, is_system)
---   values ('<uuid>', 'USR-CHAPTER', 'Philippine Red Cross - Davao del Sur Chapter',
---     'Philippine Red Cross - Davao del Sur Chapter', 'bloodservices@tabang.app',
---     '+63 82 000 0000', 'Zone 1', 'staff', 'verified', 'Chapter', true);
+--   insert into public.profiles (id, legacy_id, first_name, last_name, alias,
+--     email, phone, barangay, role, status, public_handle, is_system)
+--   values ('<uuid>', 'USR-CHAPTER', 'Philippine Red Cross',
+--     'Davao del Sur Chapter', 'Philippine Red Cross - Davao del Sur Chapter',
+--     'bloodservices@tabang.app', '+63 82 000 0000', 'Zone 1', 'staff',
+--     'verified', 'Chapter', true);
 --   insert into public.chat_threads (legacy_id, kind, group_name)
 --   values ('STAFF-ROOM', 'group', 'Staff room');
 --   -- add staff/admin rows to chat_thread_members, then:

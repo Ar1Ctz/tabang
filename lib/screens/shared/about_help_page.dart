@@ -149,12 +149,12 @@ class _AboutHelpPageState extends State<AboutHelpPage> {
       faqs: [
         _Faq(
           'How do I register as a blood donor on TABANG?',
-          'Create a community account with your full name, an alias, email, '
-              'contact number and barangay. Your alias is what other users '
-              'see. When you are ready, open Donor Hub and choose Register as '
-              'a donor to add your blood type, birth date and weight. A chapter '
-              'staff member verifies your blood card before your profile is '
-              'marked verified.',
+          'Create a community account with your first name, middle name '
+              '(optional), last name, an alias, email, contact number and '
+              'barangay. Your alias is what other users see. When you are '
+              'ready, open Donor Hub and choose Register as a donor to add your '
+              'blood type, birth date and weight. A chapter staff member '
+              'verifies your blood card before your profile is marked verified.',
         ),
         _Faq(
           'Is TABANG free to use?',

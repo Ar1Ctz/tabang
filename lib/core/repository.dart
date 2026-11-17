@@ -530,7 +530,9 @@ class TabangRepository {
   }
 
   AppUser register({
-    required String fullName,
+    required String firstName,
+    String? middleName,
+    required String lastName,
     required String alias,
     required String email,
     required String phone,
@@ -542,7 +544,9 @@ class TabangRepository {
   }) {
     final user = AppUser(
       id: 'USR-${(_users.length + 1).toString().padLeft(3, '0')}',
-      fullName: fullName,
+      firstName: firstName,
+      middleName: middleName,
+      lastName: lastName,
       alias: alias,
       email: email,
       phone: phone,
@@ -2123,7 +2127,10 @@ class TabangRepository {
   /// [userById] without being part of the user list.
   static final AppUser chapterAccount = AppUser(
     id: chapterAccountId,
-    fullName: chapterName,
+    // The chapter is an organization, not a person: the whole display name
+    // lives in the first-name slot and there is no family name.
+    firstName: chapterName,
+    lastName: '',
     alias: chapterName,
     email: 'bloodservices@tabang.app',
     phone: '+63 82 000 0000',
@@ -2853,7 +2860,8 @@ class TabangRepository {
     _users.addAll([
       AppUser(
         id: 'USR-001',
-        fullName: 'Juan Dela Cruz',
+        firstName: 'Juan',
+        lastName: 'Dela Cruz',
         alias: 'JuanDC',
         email: 'juan.delacruz@tabang.app',
         phone: '+63 912 345 6789',
@@ -2877,7 +2885,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-002',
-        fullName: 'Maria Teresa Santos',
+        firstName: 'Maria Teresa',
+        lastName: 'Santos',
         alias: 'Tere',
         email: 'tere.santos@tabang.app',
         phone: '+63 917 220 4411',
@@ -2894,7 +2903,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-003',
-        fullName: 'Rogelio Bautista',
+        firstName: 'Rogelio',
+        lastName: 'Bautista',
         alias: 'Rogel',
         email: 'rogelio.bautista@tabang.app',
         phone: '+63 918 553 9021',
@@ -2912,7 +2922,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-004',
-        fullName: 'Ricardo Dalisay',
+        firstName: 'Ricardo',
+        lastName: 'Dalisay',
         alias: 'Cardo',
         email: 'cardo.dalisay@tabang.app',
         phone: '+63 915 887 3344',
@@ -2931,7 +2942,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-005',
-        fullName: 'Angelica Ramos',
+        firstName: 'Angelica',
+        lastName: 'Ramos',
         alias: 'Angel',
         email: 'angelica.ramos@tabang.app',
         phone: '+63 920 441 7788',
@@ -2948,7 +2960,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-006',
-        fullName: 'Noel Villanueva',
+        firstName: 'Noel',
+        lastName: 'Villanueva',
         alias: 'Noel',
         email: 'noel.villanueva@tabang.app',
         phone: '+63 906 223 1199',
@@ -2967,7 +2980,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-007',
-        fullName: 'Bea Lagrimas',
+        firstName: 'Bea',
+        lastName: 'Lagrimas',
         alias: 'Bea',
         email: 'bea.lagrimas@tabang.app',
         phone: '+63 927 118 2200',
@@ -2984,7 +2998,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-008',
-        fullName: 'Karl Mendoza',
+        firstName: 'Karl',
+        lastName: 'Mendoza',
         alias: 'Karl',
         email: 'karl.mendoza@tabang.app',
         phone: '+63 939 664 5512',
@@ -3000,7 +3015,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-012',
-        fullName: 'Liza Mae Ocampo',
+        firstName: 'Liza Mae',
+        lastName: 'Ocampo',
         alias: 'Liza',
         email: 'liza.ocampo@tabang.app',
         phone: '+63 908 442 7711',
@@ -3023,7 +3039,8 @@ class TabangRepository {
       // remain testable.
       AppUser(
         id: 'USR-013',
-        fullName: 'Paolo Reyes',
+        firstName: 'Paolo',
+        lastName: 'Reyes',
         alias: 'Paolo',
         email: 'paolo.reyes@tabang.app',
         phone: '+63 917 481 2201',
@@ -3040,7 +3057,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-014',
-        fullName: 'Shamira Ampatuan',
+        firstName: 'Shamira',
+        lastName: 'Ampatuan',
         alias: 'Mira',
         email: 'shamira.ampatuan@tabang.app',
         phone: '+63 918 220 4477',
@@ -3057,7 +3075,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-015',
-        fullName: 'Dominic Fuentes',
+        firstName: 'Dominic',
+        lastName: 'Fuentes',
         alias: 'Dom',
         email: 'dominic.fuentes@tabang.app',
         phone: '+63 927 553 1180',
@@ -3074,7 +3093,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-016',
-        fullName: 'Grace Villamor',
+        firstName: 'Grace',
+        lastName: 'Villamor',
         alias: 'Grace',
         email: 'grace.villamor@tabang.app',
         phone: '+63 906 781 9922',
@@ -3091,7 +3111,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-017',
-        fullName: 'Arnel Bautista',
+        firstName: 'Arnel',
+        lastName: 'Bautista',
         alias: 'Arnel',
         email: 'arnel.bautista@tabang.app',
         phone: '+63 915 330 6614',
@@ -3108,7 +3129,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-018',
-        fullName: 'Fatima Macabangon',
+        firstName: 'Fatima',
+        lastName: 'Macabangon',
         alias: 'Fati',
         email: 'fatima.macabangon@tabang.app',
         phone: '+63 920 118 7744',
@@ -3125,7 +3147,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-019',
-        fullName: 'Jessa Mae Tupas',
+        firstName: 'Jessa Mae',
+        lastName: 'Tupas',
         alias: 'Jessa',
         email: 'jessa.tupas@tabang.app',
         phone: '+63 939 224 8801',
@@ -3142,7 +3165,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-020',
-        fullName: 'Mark Anthony Salazar',
+        firstName: 'Mark Anthony',
+        lastName: 'Salazar',
         alias: 'Mark',
         email: 'mark.salazar@tabang.app',
         phone: '+63 917 662 3318',
@@ -3159,7 +3183,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-021',
-        fullName: 'Amando Lumibao',
+        firstName: 'Amando',
+        lastName: 'Lumibao',
         alias: 'Amando',
         email: 'amando.lumibao@tabang.app',
         phone: '+63 908 991 2277',
@@ -3176,7 +3201,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-022',
-        fullName: 'Rina Mae Lanticse',
+        firstName: 'Rina Mae',
+        lastName: 'Lanticse',
         alias: 'Rina',
         email: 'rina.lanticse@tabang.app',
         phone: '+63 927 447 5533',
@@ -3193,7 +3219,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-023',
-        fullName: 'Kevin Paul Abellera',
+        firstName: 'Kevin Paul',
+        lastName: 'Abellera',
         alias: 'Kevin',
         email: 'kevin.abellera@tabang.app',
         phone: '+63 918 880 4420',
@@ -3210,7 +3237,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-009',
-        fullName: 'Maria Santos',
+        firstName: 'Maria',
+        lastName: 'Santos',
         alias: 'Recipient 209',
         email: 'maria.santos@tabang.app',
         phone: '+63 917 000 1122',
@@ -3226,7 +3254,8 @@ class TabangRepository {
       // request forms and keeps the directory realistic.
       AppUser(
         id: 'USR-024',
-        fullName: 'Ana Liza Dizon',
+        firstName: 'Ana Liza',
+        lastName: 'Dizon',
         alias: 'Ana',
         email: 'ana.dizon@tabang.app',
         phone: '+63 917 230 1144',
@@ -3239,7 +3268,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-025',
-        fullName: 'Rodel Cabrera',
+        firstName: 'Rodel',
+        lastName: 'Cabrera',
         alias: 'Rodel',
         email: 'rodel.cabrera@tabang.app',
         phone: '+63 918 552 0091',
@@ -3252,7 +3282,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-026',
-        fullName: 'Celeste Padilla',
+        firstName: 'Celeste',
+        lastName: 'Padilla',
         alias: 'Celeste',
         email: 'celeste.padilla@tabang.app',
         phone: '+63 927 771 3320',
@@ -3265,7 +3296,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-027',
-        fullName: 'Nathaniel Lim',
+        firstName: 'Nathaniel',
+        lastName: 'Lim',
         alias: 'Nate',
         email: 'nathaniel.lim@tabang.app',
         phone: '+63 906 331 8845',
@@ -3278,7 +3310,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-028',
-        fullName: 'Rowena Tiu',
+        firstName: 'Rowena',
+        lastName: 'Tiu',
         alias: 'Wena',
         email: 'rowena.tiu@tabang.app',
         phone: '+63 915 664 2201',
@@ -3291,7 +3324,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-029',
-        fullName: 'Benjie Alcantara',
+        firstName: 'Benjie',
+        lastName: 'Alcantara',
         alias: 'Benjie',
         email: 'benjie.alcantara@tabang.app',
         phone: '+63 920 887 4452',
@@ -3304,7 +3338,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-030',
-        fullName: 'Marilou Espino',
+        firstName: 'Marilou',
+        lastName: 'Espino',
         alias: 'Lulu',
         email: 'marilou.espino@tabang.app',
         phone: '+63 939 112 7790',
@@ -3317,7 +3352,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-031',
-        fullName: 'Cyrus Villareal',
+        firstName: 'Cyrus',
+        lastName: 'Villareal',
         alias: 'Cyrus',
         email: 'cyrus.villareal@tabang.app',
         phone: '+63 917 559 6603',
@@ -3330,7 +3366,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-032',
-        fullName: 'Edna Mae Rosales',
+        firstName: 'Edna Mae',
+        lastName: 'Rosales',
         alias: 'Edna',
         email: 'edna.rosales@tabang.app',
         phone: '+63 908 772 1188',
@@ -3343,7 +3380,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-033',
-        fullName: 'Francis Solano',
+        firstName: 'Francis',
+        lastName: 'Solano',
         alias: 'Francis',
         email: 'francis.solano@tabang.app',
         phone: '+63 927 330 5528',
@@ -3356,7 +3394,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-034',
-        fullName: 'Honey Grace Bacalso',
+        firstName: 'Honey Grace',
+        lastName: 'Bacalso',
         alias: 'Honey',
         email: 'honey.bacalso@tabang.app',
         phone: '+63 918 441 9902',
@@ -3369,7 +3408,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-035',
-        fullName: 'Isko Salvador',
+        firstName: 'Isko',
+        lastName: 'Salvador',
         alias: 'Isko',
         email: 'isko.salvador@tabang.app',
         phone: '+63 906 990 3317',
@@ -3382,7 +3422,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-036',
-        fullName: 'Jasmine Kwan',
+        firstName: 'Jasmine',
+        lastName: 'Kwan',
         alias: 'Jas',
         email: 'jasmine.kwan@tabang.app',
         phone: '+63 915 220 7734',
@@ -3395,7 +3436,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-037',
-        fullName: 'Lorenzo Basco',
+        firstName: 'Lorenzo',
+        lastName: 'Basco',
         alias: 'Enzo',
         email: 'lorenzo.basco@tabang.app',
         phone: '+63 920 664 1109',
@@ -3408,7 +3450,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-010',
-        fullName: 'Marco Villanueva',
+        firstName: 'Marco',
+        lastName: 'Villanueva',
         alias: 'Staff Marco',
         email: 'marco.villanueva@tabang.app',
         phone: '+63 918 777 6655',
@@ -3419,7 +3462,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-011',
-        fullName: 'System Administrator',
+        firstName: 'System',
+        lastName: 'Administrator',
         alias: 'Admin',
         email: 'admin@tabang.app',
         phone: '+63 900 000 0000',
@@ -3433,7 +3477,8 @@ class TabangRepository {
       // later choose "Register as a donor" without switching accounts.
       AppUser(
         id: 'USR-038',
-        fullName: 'Kairos Villanueva',
+        firstName: 'Kairos',
+        lastName: 'Villanueva',
         alias: 'Kai',
         email: 'community@tabang.app',
         phone: '+63 917 555 0101',
@@ -3451,7 +3496,8 @@ class TabangRepository {
       // "Directory availability" toggle.
       AppUser(
         id: 'USR-039',
-        fullName: 'Rafael Mendoza',
+        firstName: 'Rafael',
+        lastName: 'Mendoza',
         alias: 'Rafael',
         email: 'rafael.mendoza@tabang.app',
         phone: '+63 917 202 4455',
@@ -3468,7 +3514,8 @@ class TabangRepository {
       ),
       AppUser(
         id: 'USR-040',
-        fullName: 'Joanna Lim',
+        firstName: 'Joanna',
+        lastName: 'Lim',
         alias: 'Joanna',
         email: 'joanna.lim@tabang.app',
         phone: '+63 918 341 2277',

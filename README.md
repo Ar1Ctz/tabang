@@ -61,10 +61,8 @@ values, ID/cardinality constraints and a gap-closure log.
 machine-readable version and ready-to-paste prompts are in
 [`docs/ai/`](docs/ai/).
 
-**Release 2.1.0:** privacy, filter and layout fixes plus the orientation pack.
-See [`docs/releases/2.1.0.md`](docs/releases/2.1.0.md) and the video guide and
-script at
-[`docs/presentation/TABANG_VIDEO_ORIENTATION.md`](docs/presentation/TABANG_VIDEO_ORIENTATION.md).
+**Release 2.2.0:** separate first, middle and last name fields across the app
+and backend blueprint. See [`docs/releases/2.2.0.md`](docs/releases/2.2.0.md).
 
 ### Demo accounts
 
@@ -403,7 +401,7 @@ were bypassed.
 | Reports, blocks and moderation (p.12/24) | Reports persist in the repository with a required reason and optional free-text details, and appear in the staff queue with both. Blocking disables messaging in both directions and enforces a 48-hour re-block cooldown. |
 | Expiry-aware inventory (p.15) | `BloodUnit.effectiveStatus` marks expired stock even if its stored status is still `available`; expired units are excluded from usable stock, compatibility counts and expiring-soon lists. |
 | Donor eligibility: age 18–65, weight, availability, standing (p.17) | `EligibilityEngine` enforces the rules; registration computes exact age, rejects donors outside 18–65, and requires a self-reported weight. Donors below 50 kg or without a recorded weight are blocked from matching. |
-| Registration fields (p.22) | A three-step community-account wizard collects full name, unique nickname, email, contact number, birth date, blood type, weight and barangay. Everything is persisted; the nickname is the only public identity. Donor status is a separate opt-in upgrade in Donor Hub. |
+| Registration fields (p.22) | A three-step community-account wizard collects first name, an optional middle name, last name, a unique nickname, email, contact number, birth date, blood type, weight and barangay. The name parts are stored separately; the nickname is the only public identity. Donor status is a separate opt-in upgrade in Donor Hub. |
 | Email credential authentication (p.28) | Salted SHA-256 credential store, session routing by role, and no self-service admin/staff registration. |
 | Request lifecycle and staff-only fulfilment | Donor-network: open → matched (after chat-first selection) → fulfilled (staff/admin only). A donor already committed to one active request cannot be selected for another until it closes. Blood-bank: staff process the request and fulfil it directly. Cancellation is guarded; fulfilled/cancelled requests cannot be re-opened or fulfilled twice. |
 | Appointment with blood | Appointment booking is merged into the blood request: the requester uploads the required documents and books a published slot in the same dialog, and staff confirm the slot when they verify the request. A slot does not allocate a specific bag. |
@@ -751,7 +749,7 @@ connection to the simulated records.
 flutter test
 ```
 
-**213 tests** cover:
+**216 tests** cover:
 
 - **Seed data** — exactly 15 currently eligible donors (plus two deliberately
   away donors), 15 recipients, the community demo account, and a unique bundled

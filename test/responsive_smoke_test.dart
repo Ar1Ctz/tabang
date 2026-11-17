@@ -6,6 +6,7 @@ import 'package:tabang/screens/admin/admin_overview.dart';
 import 'package:tabang/screens/admin/admin_shell.dart';
 import 'package:tabang/screens/admin/inventory_management.dart';
 import 'package:tabang/screens/auth/login_screen.dart';
+import 'package:tabang/screens/auth/register_screen.dart';
 import 'package:tabang/screens/donor/blood_bank_page.dart';
 import 'package:tabang/screens/donor/discover_page.dart';
 import 'package:tabang/screens/donor/donor_shell.dart';
@@ -83,6 +84,22 @@ void main() {
     // the text itself now appears twice).
     final email = tester.widget<EditableText>(find.byType(EditableText).first);
     expect(email.controller.text, 'juan.delacruz@tabang.app');
+  });
+
+  testWidgets('registration asks for the name parts on a phone', (
+    tester,
+  ) async {
+    await usePhone(tester);
+
+    await tester.pumpWidget(
+      MaterialApp(theme: TabangTheme.light, home: const RegisterScreen()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('First name'), findsOneWidget);
+    expect(find.text('Middle name (optional)'), findsOneWidget);
+    expect(find.text('Last name'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('home rails and cards fit a 360 px phone', (tester) async {

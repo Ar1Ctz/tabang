@@ -648,7 +648,11 @@ class _ProfilePageState extends State<ProfilePage> {
     final formKey = GlobalKey<FormState>();
     final user = _user;
 
-    final nameController = TextEditingController(text: user.fullName);
+    final firstNameController = TextEditingController(text: user.firstName);
+    final middleNameController = TextEditingController(
+      text: user.middleName ?? '',
+    );
+    final lastNameController = TextEditingController(text: user.lastName);
     final aliasController = TextEditingController(text: user.alias);
     final phoneController = TextEditingController(text: user.phone);
     final weightController = TextEditingController(
@@ -670,16 +674,46 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: firstNameController,
+                            textCapitalization: TextCapitalization.words,
+                            decoration: const InputDecoration(
+                              labelText: 'First name',
+                              helperText:
+                                  'Shared only after a mutual identity reveal',
+                            ),
+                            validator: (v) => (v == null || v.trim().isEmpty)
+                                ? 'Enter your first name'
+                                : null,
+                          ),
+                        ),
+                        const SizedBox(width: TabangSpace.md),
+                        Expanded(
+                          child: TextFormField(
+                            controller: lastNameController,
+                            textCapitalization: TextCapitalization.words,
+                            decoration: const InputDecoration(
+                              labelText: 'Last name',
+                            ),
+                            validator: (v) => (v == null || v.trim().isEmpty)
+                                ? 'Enter your last name'
+                                : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: TabangSpace.md),
                     TextFormField(
-                      controller: nameController,
+                      controller: middleNameController,
+                      textCapitalization: TextCapitalization.words,
                       decoration: const InputDecoration(
-                        labelText: 'Full name',
-                        helperText:
-                            'Shared only after a mutual identity reveal',
+                        labelText: 'Middle name (optional)',
+                        helperText: 'Leave blank if you have none',
                       ),
-                      validator: (v) => (v == null || v.trim().length < 3)
-                          ? 'Enter your full name'
-                          : null,
                     ),
                     const SizedBox(height: TabangSpace.md),
                     TextFormField(
@@ -770,7 +804,9 @@ class _ProfilePageState extends State<ProfilePage> {
             ElevatedButton(
               onPressed: () {
                 if (!formKey.currentState!.validate()) return;
-                final newName = nameController.text.trim();
+                final newFirst = firstNameController.text.trim();
+                final newMiddle = middleNameController.text.trim();
+                final newLast = lastNameController.text.trim();
                 final newAlias = aliasController.text.trim();
                 final newPhone = phoneController.text.trim();
                 final newWeight = user.role == UserRole.donor
@@ -782,7 +818,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 // The audit entry names the fields, so the console can show
                 // what changed instead of just "profile updated".
                 final changed = <String>[
-                  if (newName != user.fullName) 'full name',
+                  if (newFirst != user.firstName) 'first name',
+                  if (newMiddle != (user.middleName ?? '')) 'middle name',
+                  if (newLast != user.lastName) 'last name',
                   if (newAlias != user.alias) 'alias',
                   if (newPhone != user.phone) 'contact number',
                   if (barangay != user.barangay) 'barangay',
@@ -793,7 +831,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 _repo.updateUser(
                   user.copyWith(
-                    fullName: newName,
+                    firstName: newFirst,
+                    middleName: newMiddle.isEmpty ? null : newMiddle,
+                    clearMiddleName: newMiddle.isEmpty,
+                    lastName: newLast,
                     alias: newAlias,
                     phone: newPhone,
                     barangay: barangay,

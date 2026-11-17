@@ -1,7 +1,7 @@
 # TABANG — AI Handoff Context
 
 **Version:** 1.0  
-**Baseline:** TABANG 2.1.0 base app  
+**Baseline:** TABANG 2.2.0 base app  
 **Last updated:** 2026-11-14  
 **Purpose:** Give this file to another AI so it understands the whole TABANG project before changing anything.
 
@@ -60,11 +60,11 @@ The app supports:
 | Base app | Complete |
 | Data layer | In-memory `TabangRepository`; resets on restart |
 | Backend | **Not connected**; Supabase plan exists in `docs/backend/` |
-| Tests | **213 tests**, all passing at the last check |
+| Tests | **216 tests**, all passing at the last check |
 | Analyze | Clean at the last check |
 | Android | Release APKs built (universal + per-ABI) |
 | Web | Release web bundle built |
-| Release | `v2.1.0` |
+| Release | `v2.2.0` |
 | Web host | Static bundle intended for Cloudflare Pages |
 | Backend guide | `docs/backend/` (committed) |
 | Android signing | Debug key (research demo only) |
@@ -147,7 +147,7 @@ Staff and admin may manage the chapter console. Only admin may manage another st
 | `lib/screens/admin/` | Admin shell, Overview, Operations, Inventory, Drives, Users, Moderation |
 | `lib/screens/shared/` | Profile, Settings, Guides & Help / About |
 | `lib/widgets/` | Shared UI: cards, pills, dropdowns, map, dialogs, filters |
-| `test/` | 213 behaviour tests |
+| `test/` | 216 behaviour tests |
 | `docs/backend/` | Supabase schema, RLS, Realtime, sync guide and workbook |
 | `android/`, `web/`, `ios/`, `macos/`, `linux/`, `windows/` | Platform scaffolding |
 
@@ -209,7 +209,7 @@ Deep dive: `docs/backend/BACKEND_GUIDE.md`.
 
 | Entity | Key fields | Notes |
 |---|---|---|
-| `AppUser` | id, fullName, alias, email, phone, barangay, role, status, bloodType, birthDate, weightKg, lastDonationDate, lastDonationComponent, totalDonations, isAvailable, lastActiveAt, bloodCardVerified, shareBarangay, notify*, onboardingCompleted, photoAsset, allowedComponents | `alias` is public; real name/email/phone are staff-only |
+| `AppUser` | id, firstName, middleName, lastName, fullName, alias, email, phone, barangay, role, status, bloodType, birthDate, weightKg, lastDonationDate, lastDonationComponent, totalDonations, isAvailable, lastActiveAt, bloodCardVerified, shareBarangay, notify*, onboardingCompleted, photoAsset, allowedComponents | Name parts are stored separately; `fullName` is derived. `alias` is public; name/email/phone are staff-only |
 | `BloodUnit` | barcode, bloodType, component, storageBay, status, collectedOn, expiresOn, reservedBy, reservationNote, reservedAt | Expiry is effective even if status was never changed |
 | `RemovedUnitRecord` | unit, removedAt, removedById, restored | Inventory ledger |
 | `AccountWarning` | id, userId, level, message, issuedById, issuedByAlias, issuedAt, acknowledgedAt | Max 3 active warnings |
@@ -440,7 +440,7 @@ flutter analyze --no-pub
 flutter test --no-pub
 ```
 
-Current suite: **213 tests**. It covers:
+Current suite: **216 tests**. It covers:
 
 - eligibility and ABO/Rh compatibility
 - expiry and effective status

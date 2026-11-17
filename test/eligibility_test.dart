@@ -13,7 +13,8 @@ AppUser donor({
 }) {
   return AppUser(
     id: 'T-001',
-    fullName: 'Test Donor',
+    firstName: 'Test',
+    lastName: 'Donor',
     alias: 'Test',
     email: 'test@tabang.app',
     phone: '+63 900 000 0000',

@@ -141,7 +141,9 @@ class AuthService {
   /// Donor status is a later, opt-in upgrade so new users can request blood and
   /// browse safely before exposing themselves in the donor directory.
   AuthResult register({
-    required String fullName,
+    required String firstName,
+    String? middleName,
+    required String lastName,
     required String alias,
     required String email,
     required String password,
@@ -155,11 +157,20 @@ class AuthService {
     bootstrap();
 
     final normalized = email.trim().toLowerCase();
+    final cleanFirstName = firstName.trim();
+    final cleanMiddleName = _cleanMiddleName(middleName);
+    final cleanLastName = lastName.trim();
 
-    if (fullName.trim().length < 3) {
-      return AuthResult.failure('Enter your full name.');
+    if (cleanFirstName.isEmpty) {
+      return AuthResult.failure('Enter your first name.');
     }
-    final aliasError = _validateAlias(alias, fullName);
+    if (cleanLastName.isEmpty) {
+      return AuthResult.failure('Enter your last name.');
+    }
+    final aliasError = _validateAlias(
+      alias,
+      _composeName(cleanFirstName, cleanMiddleName, cleanLastName),
+    );
     if (aliasError != null) return AuthResult.failure(aliasError);
     if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(normalized)) {
       return AuthResult.failure('Enter a valid email address.');
@@ -215,7 +226,9 @@ class AuthService {
     }
 
     final user = _repo.register(
-      fullName: fullName.trim(),
+      firstName: cleanFirstName,
+      middleName: cleanMiddleName,
+      lastName: cleanLastName,
       alias: alias.trim(),
       email: normalized,
       phone: phone.trim(),
@@ -239,7 +252,9 @@ class AuthService {
   /// member to hand over.
   ManagedUserResult adminCreateUser({
     required String actorId,
-    required String fullName,
+    required String firstName,
+    String? middleName,
+    required String lastName,
     required String alias,
     required String email,
     required String phone,
@@ -269,10 +284,20 @@ class AuthService {
     }
 
     final normalized = email.trim().toLowerCase();
-    if (fullName.trim().length < 3) {
-      return ManagedUserResult.failure('Enter the full name.');
+    final cleanFirstName = firstName.trim();
+    final cleanMiddleName = _cleanMiddleName(middleName);
+    final cleanLastName = lastName.trim();
+
+    if (cleanFirstName.isEmpty) {
+      return ManagedUserResult.failure('Enter the first name.');
     }
-    final aliasError = _validateAlias(alias, fullName);
+    if (cleanLastName.isEmpty) {
+      return ManagedUserResult.failure('Enter the last name.');
+    }
+    final aliasError = _validateAlias(
+      alias,
+      _composeName(cleanFirstName, cleanMiddleName, cleanLastName),
+    );
     if (aliasError != null) return ManagedUserResult.failure(aliasError);
     if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(normalized)) {
       return ManagedUserResult.failure('Enter a valid email address.');
@@ -306,7 +331,9 @@ class AuthService {
 
     final password = _generatePassword();
     final user = _repo.register(
-      fullName: fullName.trim(),
+      firstName: cleanFirstName,
+      middleName: cleanMiddleName,
+      lastName: cleanLastName,
       alias: alias.trim(),
       email: normalized,
       phone: phone.trim(),
@@ -318,6 +345,26 @@ class AuthService {
     );
     _credentials[normalized] = _hash(password);
     return ManagedUserResult.success(user, password);
+  }
+
+  /// Middle names are optional, so a blank field is stored as null rather
+  /// than an empty string that would leave double spaces in display names.
+  static String? _cleanMiddleName(String? value) {
+    final trimmed = value?.trim() ?? '';
+    return trimmed.isEmpty ? null : trimmed;
+  }
+
+  /// Joins the stored name parts for display and alias comparison.
+  static String _composeName(
+    String firstName,
+    String? middleName,
+    String lastName,
+  ) {
+    return [
+      firstName,
+      middleName ?? '',
+      lastName,
+    ].map((part) => part.trim()).where((part) => part.isNotEmpty).join(' ');
   }
 
   /// Nicknames are the only public identity, so they must be unique and must

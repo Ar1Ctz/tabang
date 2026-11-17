@@ -6,7 +6,7 @@
     "description": "A centralized donor-management and blood-request research prototype for Digos City, Davao del Sur.",
     "institution": "Cor Jesu College, Inc.",
     "status": "base research prototype; simulated data; no live backend",
-    "release": "v2.1.0",
+    "release": "v2.2.0",
     "release_commit": ""
   },
   "stack": {
@@ -88,6 +88,9 @@
     "AppUser": {
       "fields": [
         "id",
+        "firstName",
+        "middleName",
+        "lastName",
         "fullName",
         "alias",
         "email",
@@ -704,14 +707,14 @@
     "starter_status": "DDL is a starter; not executed against Supabase; some RPC bodies remain TODO"
   },
   "quality": {
-    "tests": 213,
+    "tests": 216,
     "analyze": "clean at last check",
     "release_assets": [
-      "TABANG-2.1.0-universal.apk",
-      "TABANG-2.1.0-arm64-v8a.apk",
-      "TABANG-2.1.0-armeabi-v7a.apk",
-      "TABANG-2.1.0-x86_64.apk",
-      "TABANG-2.1.0-web.zip",
+      "TABANG-2.2.0-universal.apk",
+      "TABANG-2.2.0-arm64-v8a.apk",
+      "TABANG-2.2.0-armeabi-v7a.apk",
+      "TABANG-2.2.0-x86_64.apk",
+      "TABANG-2.2.0-web.zip",
       "SHA256SUMS.txt"
     ]
   },

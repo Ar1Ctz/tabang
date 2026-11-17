@@ -1,7 +1,7 @@
 # TABANG — Backend & Sync Guide
 
 **Status:** pre-Supabase migration blueprint  
-**Baseline:** TABANG 2.1.0 base app  
+**Baseline:** TABANG 2.2.0 base app  
 **Audience:** the developer who will replace the in-memory `TabangRepository` with Supabase
 
 This guide is the narrative companion to:
@@ -130,13 +130,15 @@ Every one of those is now in the workbook, the SQL starter, or both, and each is
 - Staff/admin accounts are provisioned outside the app.
 - Staff-created walk-ins use an Edge Function or Admin API call with the service key **on the server only**, and return a temporary password once.
 
+Sign-up collects `first_name`, an optional `middle_name`, and `last_name` as separate fields. The `profiles` table stores those three columns; `full_name` is a generated display column, so reports and exports should still read the parts. Splitting a single typed name is not reliable once someone has a compound given name or a two-word family name.
+
 ### 4.2 Public projections, not broad base-table access
 
 RLS controls rows, not columns. A Realtime payload contains the row that changed. If a community screen subscribes to `requests`, a donor could receive `requester_id`, `review_note` and other private fields in the payload.
 
 Use physical projection tables:
 
-- `donor_directory` — public donor card fields, no email/phone/full name.
+- `donor_directory` — public donor card fields, no email/phone/legal name.
 - `blood_units_public` — stock without `reserved_by` or `reservation_note`.
 - `request_public` - verified donor-network requests only; no requester identity, notes, review data or unverified submissions.
 
@@ -559,7 +561,7 @@ Target demo parity: 15 eligible donors, 2 away donors, 15 recipients, the commun
 6. **Storage** — upload, signed preview, cleanup.
 7. **Realtime** — targeted subscriptions, reconnect refresh.
 8. **Derived data** — projections, `chapter_metrics`, eligibility job, expiry job, notifications.
-9. **Seed & QA** - 213-test parity, backend integration tests, two-device checks.
+9. **Seed & QA** - 216-test parity, backend integration tests, two-device checks.
 10. **Cutover** — backup, freeze writes, deploy web, rebuild APK, rollback plan.
 
 Do not start with Realtime. A correct schema and transactional RPCs matter more than a live cursor.

@@ -10,10 +10,10 @@ import '../../widgets/tabang_dropdown.dart';
 
 /// Registration screen.
 ///
-/// Collects the fields specified on p.22 of the paper (full name, nickname,
-/// email, contact number, birth date, blood type, weight, city address) and
-/// actually persists them. The previous build validated the form, showed a
-/// success snackbar, and discarded everything.
+/// Collects the fields specified on p.22 of the paper (first, middle and last
+/// name, nickname, email, contact number, birth date, blood type, weight, city
+/// address) and actually persists them. The previous build validated the form,
+/// showed a success snackbar, and discarded everything.
 ///
 /// Role selection is limited to Donor and Recipient. Administrative accounts
 /// are provisioned, not self-registered — [AuthService.register] enforces this
@@ -28,7 +28,9 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _fullNameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _middleNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _aliasController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -47,7 +49,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    _fullNameController.dispose();
+    _firstNameController.dispose();
+    _middleNameController.dispose();
+    _lastNameController.dispose();
     _aliasController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -55,6 +59,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _phoneController.dispose();
     _birthDateController.dispose();
     super.dispose();
+  }
+
+  /// The name as it will be displayed and compared with the nickname.
+  String get _nameOnRecord {
+    final middle = _middleNameController.text.trim();
+    return [
+      _firstNameController.text.trim(),
+      if (middle.isNotEmpty) middle,
+      _lastNameController.text.trim(),
+    ].where((part) => part.isNotEmpty).join(' ');
   }
 
   Future<void> _pickBirthDate() async {
@@ -90,7 +104,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     await Future<void>.delayed(const Duration(milliseconds: 220));
 
     final result = AuthService.instance.register(
-      fullName: _fullNameController.text,
+      firstName: _firstNameController.text,
+      middleName: _middleNameController.text,
+      lastName: _lastNameController.text,
       alias: _aliasController.text,
       email: _emailController.text,
       password: _passwordController.text,
@@ -269,16 +285,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: TabangSpace.xl),
                     _label(context, 'Personal details'),
                     const SizedBox(height: TabangSpace.sm),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _firstNameController,
+                            textCapitalization: TextCapitalization.words,
+                            textInputAction: TextInputAction.next,
+                            decoration: const InputDecoration(
+                              labelText: 'First name',
+                              prefixIcon: Icon(Icons.person_outline, size: 18),
+                            ),
+                            validator: (v) => (v == null || v.trim().isEmpty)
+                                ? 'Enter your first name'
+                                : null,
+                          ),
+                        ),
+                        const SizedBox(width: TabangSpace.md),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _lastNameController,
+                            textCapitalization: TextCapitalization.words,
+                            textInputAction: TextInputAction.next,
+                            decoration: const InputDecoration(
+                              labelText: 'Last name',
+                              prefixIcon: Icon(Icons.person_outline, size: 18),
+                            ),
+                            validator: (v) => (v == null || v.trim().isEmpty)
+                                ? 'Enter your last name'
+                                : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: TabangSpace.md),
                     TextFormField(
-                      controller: _fullNameController,
+                      controller: _middleNameController,
                       textCapitalization: TextCapitalization.words,
+                      textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
-                        labelText: 'Full name',
+                        labelText: 'Middle name (optional)',
                         prefixIcon: Icon(Icons.person_outline, size: 18),
+                        helperText: 'Leave blank if you have none',
                       ),
-                      validator: (v) => (v == null || v.trim().length < 3)
-                          ? 'Enter your full name'
-                          : null,
                     ),
                     const SizedBox(height: TabangSpace.md),
                     TextFormField(
@@ -293,7 +343,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         final alias = v?.trim() ?? '';
                         if (alias.length < 2) return 'Choose a nickname';
                         if (alias.toLowerCase() ==
-                            _fullNameController.text.trim().toLowerCase()) {
+                            _nameOnRecord.toLowerCase()) {
                           return 'Use a nickname, not your full name';
                         }
                         if (TabangRepository.instance.isAliasTaken(alias)) {
@@ -557,7 +607,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           const SizedBox(height: TabangSpace.sm),
           _reviewRow(context, 'Account type', UserRole.user.label),
-          _reviewRow(context, 'Full name', value(_fullNameController.text)),
+          _reviewRow(context, 'First name', value(_firstNameController.text)),
+          _reviewRow(
+            context,
+            'Middle name',
+            value(_middleNameController.text.trim()),
+          ),
+          _reviewRow(context, 'Last name', value(_lastNameController.text)),
           _reviewRow(
             context,
             'Nickname (public)',
